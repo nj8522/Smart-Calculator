@@ -6,9 +6,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.text.isDigitsOnly
+import com.nash.calculator.InstanceOfClass
 import com.nash.calculator.R
 import kotlinx.android.synthetic.main.fragment_display.*
+import kotlinx.android.synthetic.main.fragment_keypad.*
 import java.lang.Exception
+import java.text.DecimalFormat
 
 
 /**
@@ -19,6 +23,11 @@ import java.lang.Exception
 class DisplayFragment : Fragment(){
 
     private var textFromFragment : String = ""
+    private  var doubleValueFromString : Double = 0.0
+    private val integerNumberFormat = DecimalFormat("###############")
+    private val doubleNumberFormat = DecimalFormat("########.#######")
+    private var resultView : String = ""
+    private lateinit var instanceOfClass : InstanceOfClass
 
 
     override fun onCreateView(
@@ -28,6 +37,7 @@ class DisplayFragment : Fragment(){
 
         // Inflate the layout for this fragment
         val  view = inflater.inflate(R.layout.fragment_display, container, false)
+        instanceOfClass = InstanceOfClass
         return view
     }
 
@@ -38,10 +48,21 @@ class DisplayFragment : Fragment(){
             "ac" -> clearAllNumber()
             "c"  -> clearLastNumber()
             "="  -> findSum()
-            else -> { textFromFragment += data
-                      numbers.text = textFromFragment }
+
+            else -> {
+
+                if(textFromFragment.isEmpty() && (data == "x" || data == "/")) {
+                    textFromFragment += "0$data"
+                }  else {
+                    textFromFragment += data
+                }
+
+                numbers.text = textFromFragment
+
+            }
         }
     }
+
 
     private fun clearLastNumber() {
 
@@ -62,28 +83,55 @@ class DisplayFragment : Fragment(){
         textFromFragment = ""
         result_view.text = ""
         numbers.text = "0"
-
     }
+
 
     private fun findSum(){
 
-        result_view.text = textFromFragment
-        try {
-            val actualValue = textFromFragment
-            val valueInLong = actualValue.toLong()
+        if(textFromFragment.isNotEmpty() && !textFromFragment.equals("Division by Zero")) {
 
-            if(actualValue == valueInLong.toDouble().toString()){
-                textFromFragment = valueInLong.toDouble().toString()
+            resultView = textFromFragment
+            result_view.text = textFromFragment
+
+            try {
+
+                val actualValue = instanceOfClass.expressionProcessor.inputProcessor(textFromFragment)
+                val isStringOrNumber = checkIfStringOrNumber(actualValue)
+                var resultText : String = ""
+                if(isStringOrNumber){
+                    doubleValueFromString = actualValue.toDouble()
+
+                    if((doubleValueFromString % 1).equals(0)){
+                        resultText = integerNumberFormat.format(doubleValueFromString.toInt())
+                        numbers.text = resultText
+                        textFromFragment = resultText
+                    } else {
+                        resultText = doubleNumberFormat.format(doubleValueFromString)
+                        numbers.text = resultText
+                        textFromFragment = resultText
+                    }
+
+                } else {
+                    numbers.text = actualValue
+                    textFromFragment = actualValue
+                }
             }
-            else {
-                textFromFragment = valueInLong.toString()
+            catch (e : NumberFormatException){
+                Log.e("Error", e.message.toString())
             }
-
         }
-        catch (e : Exception){
-            Log.e("Error", e.message.toString())
-        }
+    }
 
+
+    private fun checkIfStringOrNumber(expressionValue : String) : Boolean{
+
+         try{
+             val isNumberOrNot = expressionValue.toDouble()
+
+         } catch (e : java.lang.NumberFormatException) {
+             return false
+         }
+        return true
     }
 
 

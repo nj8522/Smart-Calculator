@@ -1,12 +1,17 @@
 package com.nash.calculator
 
-import com.nash.calculator.ui.DisplayFragment
-import com.nash.calculator.ui.KeypadFragment
+import com.nash.calculator.helper.*
+
 
 object InstanceOfClass {
 
-    val displayFragment = DisplayFragment()
-    val keypadFragment = KeypadFragment()
+    var operatorStack = TokenStack()
+    var valueStack = TokenStack()
+    var calculatorTokens = CalculatorTokens()
+    var segregateNumberAndOperators = SegregateNumberAndOperators()
+    var calculateExpression = CalculateExpression()
+    var calculatorHelper = CalculatorHelper()
+    var expressionProcessor = ExpressionProcessor()
 
 
 }

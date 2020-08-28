@@ -8,26 +8,24 @@ import com.nash.calculator.ui.KeypadFragment
 
 class MainActivity : AppCompatActivity(), KeypadFragment.DataToDisplayFragment {
 
-     lateinit var instanceOfClass : InstanceOfClass
+    private lateinit var displayFragment : DisplayFragment
 
-    lateinit var displayFragment: DisplayFragment
-    lateinit var keypadFragment: KeypadFragment
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        instanceOfClass = InstanceOfClass
+        displayFragment = DisplayFragment()
 
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.display_fragment, instanceOfClass.displayFragment)
+            .replace(R.id.display_fragment, displayFragment)
             .commit()
     }
 
     override fun displayTextFromKeyPad(num: String) {
-        instanceOfClass.displayFragment.getDataFromKeyPadFragment(num)
+        displayFragment.getDataFromKeyPadFragment(num)
     }
 
 }
